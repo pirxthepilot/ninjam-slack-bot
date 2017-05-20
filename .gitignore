@@ -1,0 +1,9 @@
+*.swp
+*.pyc
+*.log
+*test.py
+*.cfg
+config.py
+__pycache__/
+/virtualenv
+data/
