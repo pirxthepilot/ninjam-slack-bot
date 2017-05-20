@@ -1,0 +1,9 @@
+[Core]
+Name = Ninjam
+Module = ninjam
+
+[Python]
+Version = 2+
+
+[Documentation]
+Description = Ninjam notifications

@@ -1,0 +1,8 @@
+[ninjam]
+host = ninjam.server 
+port = 2049
+username = anonymous:ninjambot
+password = 
+
+[chat]
+channel = #ninjam
