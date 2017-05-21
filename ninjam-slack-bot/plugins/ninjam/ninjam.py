@@ -51,7 +51,9 @@ class Ninjam(BotPlugin):
         queue_thread.start()
 
     def report_login(self, user):
-        return "**%s** has joined ninjam" % self.get_id(user)
+        text = "**%s** has joined ninjam" % self.get_id(user)
+        self.log.info(text)
+        return text
 
     @re_botcmd(pattern=r"^ninjam stat(us)?", prefixed=False, flags=re.IGNORECASE)
     def ninjam_status(self, msg, args):
@@ -61,6 +63,7 @@ class Ninjam(BotPlugin):
         try:
             self.ninjam
         except NameError:
+            self.log.error('NameError on self.ninjam')
             return "Sorry, I'm having trouble getting ninjam data"
         if len(self.ninjam.users) == 1:
             are_is = 'is'
