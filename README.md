@@ -52,6 +52,9 @@ systemctl start errbot
 ```
 
 
-## Acknowledgment
+## Acknowledgments
 
-Huge thanks to [teamikl](https://github.com/teamikl) for the Ninjam-side code (based [here](https://github.com/teamikl/ninjam-chat/blob/master/src/ninjam-bot/bot.py))
+Huge thanks to:
+
+* [teamikl](https://github.com/teamikl) for the Ninjam-side code (based [here](https://github.com/teamikl/ninjam-chat/blob/master/src/ninjam-bot/bot.py))
+* The [Ninjam Protocol](https://github.com/wahjam/wahjam/wiki/Ninjam-Protocol) documentation
