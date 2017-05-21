@@ -18,7 +18,7 @@ from threading import Thread
 from collections import namedtuple
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 handler = logging.FileHandler('ninjam.log')
 logger.addHandler(handler)
 
