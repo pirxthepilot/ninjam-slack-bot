@@ -11,11 +11,16 @@ import sys
 import os
 import re
 import hashlib
+import logging
 from socket import socket
 from struct import Struct, pack, unpack
 from threading import Thread
 from collections import namedtuple
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__file__)
+handler = logging.FileHandler('ninjam.log')
+logger.addHandler(handler)
 
 EXIT_RESTART = 3
 
@@ -42,8 +47,7 @@ class NINJAMConnection:
         read = self._stream.read
         for header in iter(lambda: read(5), b''):
             if len(header) < 5:
-                #if __debug__:
-                #    Logger.debug("NINJAM Connection lost")
+                logger.debug("NINJAM Connection lost")
                 os._exit(EXIT_RESTART)
                 break
             msgtype, msglen = NetMsg.unpack(header)
@@ -51,11 +55,11 @@ class NINJAMConnection:
             yield msgtype, msgbody
 
     def sendmsg(self, msgtype, msg):
-        print("SEND> {:02X} {}".format(msgtype, msg))
+        logger.debug("SEND> {:02X} {}".format(msgtype, msg))
         try:
             self._sock.sendall(NetMsg.pack(msgtype, len(msg)) + msg)
         except:
-            print('sendmsg error')
+            Logger.error(('sendmsg error'))
             import traceback
             traceback.print_exc()
             os._exit(EXIT_RESTART)
@@ -113,12 +117,12 @@ def make_daemon_thread(**kw):
 
 def ninjam_bot(Q, ninjam):
     for msgtype, msgbody in ninjam.message_loop():
-        print("{:02X} {}".format(msgtype, msgbody))
+        logger.debug("{:02X} {}".format(msgtype, msgbody))
         if msgtype == 0x00:  # SERVER AUTH CHALLENGE
             username = ninjam.username.encode("latin-1")
             password = ninjam.password.encode("latin-1")
             challenge, servercaps, protover = unpack("<8sLL", msgbody[:16])
-            #print "{} {:08x} {:08x}".format(challenge, servercaps, protover)
+            #logger.debug("{} {:08x} {:08x}".format(challenge, servercaps, protover))
 
             # keep-alive (minimum keep-alive is 3)
             keep_alive_interval = max((servercaps >> 8) & 0xff, 3)
@@ -132,7 +136,7 @@ def ninjam_bot(Q, ninjam):
             ninjam.sendmsg(0x80, chunk)
             del x, chunk
         elif msgtype == 0x01:  # SERVER AUTH REPLY
-            print("Setting channel info")
+            logger.debug("Setting channel info")
             ninjam.sendmsg(0x82, b"")
         elif msgtype == 0x03:  # SERVER USERINFO CHANGE NOTIFY
             for info in ninjam.parse_user_info(msgbody):
@@ -144,27 +148,10 @@ def ninjam_bot(Q, ninjam):
             mode, sender, message, _, _, _ = params
             sender = sender.decode('latin-1')
             if mode == b"JOIN":
+                logger.info('%s logged in' % sender)
                 ninjam.users[sender] = 1
                 Q.put(("LOGIN", sender))
-                #print("%s has joined ninjam" % sender)
-                #print("There are currently %d logged in users" % len(ninjam.users))
-                #print("%s" % [x for x in ninjam.users])
             elif mode == b"PART":
+                logger.info('%s logged off' % sender)
                 ninjam.users.pop(sender, None)
-                #Q.put(("CHAT", "%s has left ninjam" % sender))
-                #print("%s has left ninjam" % sender)
-                #print("There are currently %d logged in users" % len(ninjam.users))
-
-def main():
-    ninjam = NINJAMConnection(host, port, username, password)
-    ninjam_bot(ninjam)
-    #ninjam_thread = make_daemon_thread(
-    #target=ninjam_bot, args=(queue, ninjam, irc))
-    #ninjam_thread.start()
-
-
-if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("Exiting program.")
+                #Q.put(("LOGOFF", sender))
