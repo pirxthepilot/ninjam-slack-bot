@@ -1,0 +1,11 @@
+[Unit]
+Description=Start Errbot chatbot
+After=network.service
+
+[Service]
+Environment="LC_ALL=en_US.UTF-8"
+ExecStart=/path/to/ninjam-slack-bot/virtualenv/bin/errbot --config /path/to/ninjam-slack-bot/ninjam-slack-bot/config.py
+WorkingDirectory=/path/to/ninjam-slack-bot/ninjam-slack-bot
+User=errbot
+Restart=always
+KillSignal=SIGINT

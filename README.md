@@ -10,6 +10,7 @@ Powered by [Errbot](http://errbot.io)!
 * Python 3.3+
 * pip
 * Virtualenv is recommended
+* Systemd (for the auto-start service)
 
 
 ## Installation
@@ -36,6 +37,18 @@ or
 
 ```
 errbot --daemon
+```
+
+**To start automatically as a service with systemd:**
+
+Copy the supplied `errbot.service.example` to `/etc/systemd/system/errbot.service`. Edit the paths and username in the file - make sure everything is correct!
+
+Then do
+
+```
+systemctl daemon-reload
+systemctl enable errbot
+systemctl start errbot
 ```
 
 
