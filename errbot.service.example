@@ -9,3 +9,6 @@ WorkingDirectory=/path/to/ninjam-slack-bot/ninjam-slack-bot
 User=errbot
 Restart=always
 KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target
